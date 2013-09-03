@@ -3,8 +3,8 @@
 // @author	有一份田
 // @description	虾米音乐助手带您突破虾米VIP会员音乐下载数量限制,畅享高品质音乐,另外通过分享VIP用户的Cookie,可以让普通用户也能享受到高品质音乐,这是一个合作分享的工具,人人喂我,我喂人人,世界因为分享更精彩
 // @namespace	http://userscripts.org/scripts/show/175716
-// @updateURL	http://userscripts.org/scripts/source/175716.meta.js
-// @downloadURL	http://userscripts.org/scripts/source/175716.user.js
+// @updateURL	https://userscripts.org/scripts/source/175716.meta.js
+// @downloadURL	https://userscripts.org/scripts/source/175716.user.js
 // @icon	http://duoluohua.com/myapp/script/xiamimusic/images/icon_48.png
 // @license	GPL version 3
 // @encoding	utf-8
