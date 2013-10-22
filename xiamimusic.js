@@ -69,7 +69,7 @@ var songsList=getSongList(),uid=getUid(),
 })();
 
 function getSongList(){
-	var arr=[],objs=document.getElementsByClassName("song_info");
+	var arr=[],objs=document.getElementsByClassName('song_info');
 	for(var i=1;i<objs.length;i++){
 		var tmpObj=objs[i].childNodes[1];
 		var song=getSongInfo(tmpObj);
@@ -78,13 +78,13 @@ function getSongList(){
 	return arr;
 }
 function getUid(){
-	var o=document.getElementsByClassName("icon user")[0].parentNode;
-	var reg=new RegExp("u\\/(\\w*)","ig");
+	var o=document.getElementsByClassName('icon user')[0].parentNode;
+	var reg=new RegExp('u\\/(\\w*)','ig');
 	var arr=reg.exec(o.href);
-	return arr[1] || "";
+	return arr[1] || '';
 }
 function getSongInfo(o){
-	var reg=new RegExp("song\\/(\\w*)","ig");
+	var reg=new RegExp('song\\/(\\w*)','ig');
 	var arr=reg.exec(o.href);
 	return {"o":o,"id":arr[1] || ""};
 }
@@ -94,7 +94,7 @@ function getSongInfo(o){
 //3.先访问作者服务器,由服务器给出最快的远程服务器地址,再开始请求
 
 function getQueryUrl(type){
-	var url="http://www.xiami.com/song/gethqsong/sid/";
+	var url='http://www.xiami.com/song/gethqsong/sid/';
 	if(type<2){
 		nowQuerySongUrl=url
 	}else{
@@ -102,7 +102,7 @@ function getQueryUrl(type){
 			nowQuerySongUrl=buildUri(remoteUrl,locaQueryData);
 		}else{
 			GM_xmlhttpRequest({
-				method: "GET",
+				method: 'GET',
 				url: queryUrl,
 				onload: function(response) {
 					var data=response.responseText,opt=JSON.parse(data);
@@ -132,24 +132,25 @@ function querySong(o,id){
 	});
 }
 function showUerInfo(text){
-	var o=document.getElementById("song_count").parentNode.parentNode,
+	var o=document.getElementById('song_count').parentNode.parentNode,
 	    html='<div align="center" style="color:#008000;"><b>'+(text || '用户数据赶来中...')+'</b></div>',
 	    node=this.node;
 	if(node){
 		node.innerHTML=html;
 		return;
 	}
-	node=document.createElement("span");
-	updateNode=document.createElement("div");
+	node=document.createElement('span');
+	updateNode=document.createElement('div');
 	updateNode.innerHTML='<div align="center" ><a target="_blank" href="'+getUpdateUrl('getnewversion',1)+'"><img id="updateimg" style="display:none;"/></a></div>';
 	node.innerHTML=html;
 	o.appendChild(node);
 	o.appendChild(updateNode);
+	o.title=APPNAME;
 	this.node=node;
 	checkUpdate();
 }
 function showSongsInfo(o,opt){
-	var node=o.node,url=opt ? opt.location : "";
+	var node=o.node,url=opt ? opt.location : '';
 	if(node){
 		node.innerHTML='<a href="javascript:void(0);" onclick=\'window.open("'+url+'");\' style="float:right;position:relative;margin-right:30px;text-decoration:underline;">点此下载</a>';
 		if(opt && opt.msg)showUerInfo(opt.msg);
@@ -212,7 +213,7 @@ function deStr(str){
 		_loc_6[_loc_7]=_loc_3.substr(_loc_4*(_loc_7-_loc_5)+(_loc_4+1)*_loc_5,_loc_4);
 		_loc_7++;
 	}
-	var _loc_8="";
+	var _loc_8='';
 	_loc_7=0;
 	while (_loc_7 < _loc_6[0].length){
 		_loc_10 = 0;
@@ -223,17 +224,17 @@ function deStr(str){
 		_loc_7++;
 	}
 	_loc_8 = unescape(_loc_8);
-	var _loc_9 = "";
+	var _loc_9 = '';
 	_loc_7 = 0;
 	while (_loc_7 < _loc_8.length){
-		if (_loc_8.charAt(_loc_7) == "^"){
-                    _loc_9 = _loc_9 + "0";
+		if (_loc_8.charAt(_loc_7) == '^'){
+                    _loc_9 = _loc_9 + '0';
                 }else{
                     _loc_9 = _loc_9 + _loc_8.charAt(_loc_7);
                 }
 		_loc_7++;
 	}
-	_loc_9 = _loc_9.replace("+", " ");
+	_loc_9 = _loc_9.replace('+', ' ');
 	return _loc_9;
 }
 function googleAnalytics(){
