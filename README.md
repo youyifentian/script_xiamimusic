@@ -62,11 +62,12 @@
   [7]: http://userscripts.org/images/browsers/safari.png
   [8]: http://ss-o.net/safari/extension/NinjaKit.safariextz
   [9]: http://userscripts.org/scripts/show/175716
-  [10]: http://duoluohua.com/download/
-  [11]: http://duoluohua.com/myapp/api/xiami/share/?action=share
-  [12]: http://duoluohua.com/myapp/api/xiami/share/?action=share
-  [13]: http://duoluohua.com/myapp/script/xiamimusic/images/vip.png
-  [14]: http://duoluohua.com/myapp/script/xiamimusic/images/unvip.png
-  [15]: http://duoluohua.com/myapp/script/xiamimusic/images/diy.png
+  [10]: http://www.duoluohua.com/download/
+  [11]: http://www.duoluohua.com/myapp/api/xiami/share/?action=share
+  [12]: http://www.duoluohua.com/myapp/api/xiami/share/?action=share
+  [13]: http://img.duoluohua.com/appimg/script_xiamimusicscript_vip.png
+  [14]: http://img.duoluohua.com/appimg/script_xiamimusicscript_unvip.png
+  [15]: http://img.duoluohua.com/appimg/script_xiamimusicscript_diy.png
+
 
 
