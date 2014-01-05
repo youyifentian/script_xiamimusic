@@ -9,12 +9,13 @@
 // @license     GPL version 3
 // @encoding    utf-8
 // @date        23/10/2013
-// @modified    1/1/2014
+// @modified    2/1/2014
 // @encoding    utf-8
 // @include     http://www.xiami.com/download/*
+// @grant       GM_setClipboard
 // @grant       GM_xmlhttpRequest
 // @run-at      document-end
-// @version     1.0.7
+// @version     1.0.8
 // ==/UserScript==
 
 
@@ -31,7 +32,7 @@
 
 
 var APPNAME='虾米音乐助手';
-var VERSION='1.0.7';
+var VERSION='1.0.8';
 var t = new Date().getTime();
 //该值决定了当检测到您不是虾米VIP会员时是否会向远程服务器请求数据,如果您是VIP会员请忽略;
 var isRemote=true;
@@ -50,6 +51,8 @@ msg=[
     '<font color="red">获取数据时候,请升级脚本到最新版本或联系作者...</font>',//3
     '数据正在赶来中...',//4
     '点此下载',//5
+    '点此复制',//6
+    '复制成功',//7
     ''
 ];
 
@@ -108,7 +111,8 @@ function querySong(song){
     var url=querySongUrl+song.id,o=song.o;
     showSongsInfo(o);
     httpRequest(url,function(opt){
-        opt.location=decryptStr(opt.location);
+        var str=opt.location;
+        opt.location=isUrl(str) ? str : decryptStr(str);
         showSongsInfo(o,opt);
     });
 }
@@ -123,7 +127,17 @@ function showUerInfo(text){
 function showSongsInfo(o,opt){
     var down=o.down,url=opt ? opt.location : '';
     if(down){
-        down.html('<a href="javascript:;">'+msg[5]+'</a>').find('a').css({'float':'right','position':'relative','margin-right':'30px','text-decoration':'underline'}).click(function(){iframe.src=url;});
+        down.html('<a href="javascript:;"type="1">'+msg[5]+'</a><a href="javascript:;"type="0">'+msg[6]+'</a>').find('a').css({'float':'right','position':'relative','margin-right':'20px','text-decoration':'underline'}).click(function(){
+            var o=this,type=o.type;
+            if(type==0){
+                clearTimeout(o.hwnd);
+                GM_setClipboard(url);
+                o.innerHTML=msg[7];
+                o.hwnd=setTimeout(function(){o.innerHTML=msg[6];},3000);
+            }else if(type==1){
+                iframe.src=url;
+            }
+        });
         return opt && opt.msg && showUerInfo(opt.msg);
     }
     o.down=$('<span>').html('<span style="float:right;position:relative;margin-right:10px;color:#A1CBE4;">'+msg[4]+'...</span>').appendTo(o);
@@ -143,8 +157,7 @@ function httpRequest(url,callback){
         }
     });
 }
-function checkUpdate(){var a='var info=document.getElementById("updateimg");';a+='info.src="'+getUpdateUrl("checkupdate",1)+'";';a+="info.onload=function(){";a+='info.style.display="block";';a+="}";loadJs(a)}function getUpdateUrl(b,a){return"http://app.duoluohua.com/update?action="+b+"&system=script&appname=xiamimusicscript&apppot=scriptjs&frompot=songweb&type="+a+"&version="+VERSION+"&t="+t}function loadJs(c){var b=document.getElementsByTagName("head")[0],a=document.createElement("script");a.type="text/javascript";a.text=c;b.appendChild(a)}function decryptStr(p){var q=undefined;var r=Number(p.charAt(0));var s=p.substring(1);var u=Math.floor(s.length/r);var k=s.length%r;var l=new Array();var m=0;while(m<k){if(l[m]==undefined){l[m]=""}l[m]=s.substr((u+1)*m,(u+1));m++}while(m<r){l[m]=s.substr(u*(m-k)+(u+1)*k,u);m++}var n="";m=0;while(m<l[0].length){q=0;while(q<l.length){n=n+l[q].charAt(m);q=q+1}m++}n=unescape(n);var o="";m=0;while(m<n.length){if(n.charAt(m)=="^"){o=o+"0"}else{o=o+n.charAt(m)}m++}o=o.replace("+"," ");return o}function googleAnalytics(){var a="var _gaq = _gaq || [];";a+="_gaq.push(['_setAccount', 'UA-43280861-1']);";a+="_gaq.push(['_trackPageview']);";a+="function googleAnalytics(){";a+="	var ga = document.createElement('script');ga.type = 'text/javascript';";a+="	ga.async = true;ga.src = 'https://ssl.google-analytics.com/ga.js';";a+="	var s = document.getElementsByTagName('script')[0];";a+="	s.parentNode.insertBefore(ga, s)";a+="}";a+="googleAnalytics();";a+="_gaq.push(['_trackEvent','xiami_gm',String('"+VERSION+"')]);";loadJs(a)}googleAnalytics();
-
+function isUrl(a){return /^(http|https):\/\/([\w-]+(:[\w-]+)?@)?[\w-]+(\.[\w-]+)+(:[\d]+)?([#\/\?][^\s<>;"\']*)?$/.test(a);}function checkUpdate(){var a='var info=document.getElementById("updateimg");';a+='info.src="'+getUpdateUrl("checkupdate",1)+'";';a+="info.onload=function(){";a+='info.style.display="block";';a+="}";loadJs(a)}function getUpdateUrl(b,a){return"http://app.duoluohua.com/update?action="+b+"&system=script&appname=xiamimusicscript&apppot=scriptjs&frompot=songweb&type="+a+"&version="+VERSION+"&t="+t}function loadJs(c){var b=document.getElementsByTagName("head")[0],a=document.createElement("script");a.type="text/javascript";a.text=c;b.appendChild(a)}function decryptStr(p){var q=undefined;var r=Number(p.charAt(0));var s=p.substring(1);var u=Math.floor(s.length/r);var k=s.length%r;var l=new Array();var m=0;while(m<k){if(l[m]==undefined){l[m]=""}l[m]=s.substr((u+1)*m,(u+1));m++}while(m<r){l[m]=s.substr(u*(m-k)+(u+1)*k,u);m++}var n="";m=0;while(m<l[0].length){q=0;while(q<l.length){n=n+l[q].charAt(m);q=q+1}m++}n=unescape(n);var o="";m=0;while(m<n.length){if(n.charAt(m)=="^"){o=o+"0"}else{o=o+n.charAt(m)}m++}o=o.replace("+"," ");return o}function googleAnalytics(){var a="var _gaq = _gaq || [];";a+="_gaq.push(['_setAccount', 'UA-43280861-1']);";a+="_gaq.push(['_trackPageview']);";a+="function googleAnalytics(){";a+="	var ga = document.createElement('script');ga.type = 'text/javascript';";a+="	ga.async = true;ga.src = 'https://ssl.google-analytics.com/ga.js';";a+="	var s = document.getElementsByTagName('script')[0];";a+="	s.parentNode.insertBefore(ga, s)";a+="}";a+="googleAnalytics();";a+="_gaq.push(['_trackEvent','xiami_gm',String('"+VERSION+"')]);";loadJs(a)}googleAnalytics();
 
 
 
