@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        虾米音乐助手
 // @author      有一份田
-// @description 虾米音乐助手带您突破虾米VIP会员音乐下载数量限制,畅享高品质音乐,另外通过分享VIP用户的Cookie,可以让普通用户也能享受到高品质音乐,这是一个合作分享的工具,人人喂我,我喂人人,世界因为分享更精彩
+// @description 虾米音乐助手带您下载虾米音乐
 // @namespace   http://userscripts.org/scripts/show/175716
 // @updateURL   https://userscripts.org/scripts/source/175716.meta.js
 // @downloadURL https://userscripts.org/scripts/source/175716.user.js
@@ -9,13 +9,13 @@
 // @license     GPL version 3
 // @encoding    utf-8
 // @date        23/10/2013
-// @modified    15/3/2014
+// @modified    03/05/2014
 // @encoding    utf-8
 // @include     http://www.xiami.com/download/*
 // @grant       GM_setClipboard
 // @grant       GM_xmlhttpRequest
 // @run-at      document-end
-// @version     1.0.9
+// @version     1.1.0
 // ==/UserScript==
 
 
@@ -32,39 +32,31 @@
 
 
 var APPNAME='虾米音乐助手';
-var VERSION='1.0.9';
+var VERSION='1.1.0';
 var t = new Date().getTime();
-//该值决定了当检测到您不是虾米VIP会员时是否会向远程服务器请求数据,如果您是VIP会员请忽略;
-var isRemote=true;
 
 
 var $=$ || unsafeWindow.$,
 iframe=$('<div style="display:none;">').html('<iframe id="xiamihelper"></iframe>').appendTo(document.body).find('#xiamihelper')[0],
-songsList=getSongList(),uid=getUid(),querySongUrl='',
-shareurl='http://www.duoluohua.com/app/share/xiami/?action=share',
-sharelisturl='http://www.duoluohua.com/app/share/xiami/?action=sharelist',
-queryUrl='http://www.duoluohua.com/api/xiami/getsong/?action=geturl&fromid=xiamimusicscript&version='+VERSION,
+songsList=getSongList(),uid=getUid(),querySongUrl='http://www.xiami.com/song/gethqsong/sid/',queryCount=0,
 msg=[
-    '您还 <font color="#FF55AA">不是</font> 虾米VIP会员,但您可以尝试修改脚本中 isRemote 的值来获取远程数据,以获取高品质音乐',//0
-    '您是虾米VIP会员,您可以直接下载高品质音乐,您也可以 <a style="text-decoration:underline;" href="javascript:;" onclick=\'window.open("'+shareurl+'");\' >点此</a> 分享您的Cookie----人人喂我,我喂人人<div><a style="text-decoration:underline;color:#999999;" href="javascript:;" onclick=\'window.open("'+sharelisturl+'");\'>贡献者名单</a></div>',//1
-    '您请求了远程VIP会员的数据,正在为您加载中...',//2
-    '<font color="red">获取数据时候,请升级脚本到最新版本或联系作者...</font>',//3
-    '数据正在赶来中...',//4
-    '点此下载',//5
-    '点此复制',//6
-    '复制成功',//7
+    '<font color="red">获取数据失败,请升级脚本到最新版本或联系作者...</font>',//0
+    '数据正在赶来中...',//1
+    '点此下载',//2
+    '点此复制',//3
+    '复制成功',//4
+    '获取成功',//5
     ''
 ];
 
 (function(){
-    if(!uid || !songsList.length){return showUerInfo(msg[3]);}
+    if(!uid || !songsList.length){return showUerInfo(msg[0]);}
     var url='http://www.xiami.com/vip/update-tone?tone_type=1&user_id='+uid;
-    showUerInfo(msg[4]);
+    showUerInfo(msg[1]);
     httpRequest(url,function(opt){
         var type=opt.status;
-        type=type==1 ? 1 : (isRemote ? 2 : 0);
-        showUerInfo(msg[type]);
-        getQueryUrl(type);
+        showUerInfo(msg[1]);
+        startQuerySong();
     });
 })();
 function getUid(){
@@ -85,22 +77,6 @@ function getSongInfo(o){
      var v=o.value,p=$(o).parent().next()[0];
     return {"o":p,"id":v};
 }
-
-function getQueryUrl(type){
-    if(type<2){
-        querySongUrl='http://www.xiami.com/song/gethqsong/sid/';
-        return startQuerySong();
-    }else{
-        httpRequest(queryUrl,function(opt){
-            if(opt.status==1 && opt.msg){
-                showUerInfo(opt.msg);
-            }else if(opt.status==0){
-                querySongUrl=buildUri(opt.url,'appname=xiamimusicscript&version='+VERSION);
-                startQuerySong();
-            }
-        });
-    }
-}
 function startQuerySong(){
     for(var i=0;i<songsList.length;i++){
         var song=songsList[i];
@@ -113,6 +89,7 @@ function querySong(song){
     httpRequest(url,function(opt){
         var str=opt.location;
         opt.location=isUrl(str) ? str : decryptStr(str);
+        queryCount++;
         showSongsInfo(o,opt);
     });
 }
@@ -127,20 +104,22 @@ function showUerInfo(text){
 function showSongsInfo(o,opt){
     var down=o.down,url=opt ? opt.location : '';
     if(down){
-        down.html('<a href="javascript:;"type="1">'+msg[5]+'</a><a href="javascript:;"type="0">'+msg[6]+'</a>').find('a').css({'float':'right','position':'relative','margin-right':'20px','text-decoration':'underline'}).click(function(){
+        down.html('<a href="javascript:;"type="1">'+msg[2]+'</a><a href="javascript:;"type="0">'+msg[3]+'</a>').find('a').css({'float':'right','position':'relative','margin-right':'20px','text-decoration':'underline'}).click(function(){
             var o=this,type=o.type;
             if(type==0){
                 clearTimeout(o.hwnd);
                 GM_setClipboard(url);
-                o.innerHTML=msg[7];
-                o.hwnd=setTimeout(function(){o.innerHTML=msg[6];},3000);
+                o.innerHTML=msg[4];
+                o.hwnd=setTimeout(function(){o.innerHTML=msg[3];},3000);
             }else if(type==1){
                 iframe.src=url;
             }
         });
+        var songsCount=songsList.length,text=queryCount==songsCount ? msg[5] : msg[1]+queryCount+'/'+songsCount;
+        showUerInfo(text);
         return opt && opt.msg && showUerInfo(opt.msg);
     }
-    o.down=$('<span>').html('<span style="float:right;position:relative;margin-right:10px;color:#A1CBE4;">'+msg[4]+'...</span>').appendTo(o);
+    o.down=$('<span>').html('<span style="float:right;position:relative;margin-right:10px;color:#A1CBE4;">'+msg[1]+'...</span>').appendTo(o);
 }
 function buildUri(url,strData){
     var arr_1=url.split('?'),arr_2=strData.split('&');
